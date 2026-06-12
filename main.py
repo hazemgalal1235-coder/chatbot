@@ -61,6 +61,8 @@ async def chat(request: ChatRequest):
         )
 
     data = response.json()
+    if response.status_code != 200:
+        return {"reply": f"خطأ من Groq: {data}"}
     reply = data.get("choices", [{}])[0].get("message", {}).get("content", "عذراً، حدث خطأ.")
     return {"reply": reply}
 
