@@ -60,13 +60,8 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; direction: rtl; backg
 </div>
 
 <script>
-const SYSTEM_PROMPT = `أنت مساعد طبي متخصص حصراً في الأمراض الجلدية. اسمك "د. جلدية".
-تخصصك: أمراض البشرة، الشعر، الأظافر، الفطريات الجلدية، العناية بالبشرة.
-القواعد:
-- لو السؤال مش عن الجلد أو الشعر أو الأظافر، اعتذر وقل أنك متخصص في الجلدية فقط.
-- دائماً انصح بمراجعة طبيب متخصص للتشخيص الدقيق.
-- لا تعطي جرعات دوائية — هذا من صلاحية الطبيب.
-- تكلم بالعربية دائماً بأسلوب ودود ومهني.`;
+// غيّر الرابط ده بعد رفع الباك إند
+const API_URL = "https://chatbot-production-9dcc.up.railway.app/chat";
 
 const messagesEl = document.getElementById('messages');
 const typingEl = document.getElementById('typing');
@@ -96,13 +91,13 @@ async function sendMessage() {
   history.push({ role: 'user', content: text });
   showTyping(true); sendBtn.disabled = true;
   try {
-    const res = await fetch('/api/chat', {
+    const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...history] })
+      body: JSON.stringify({ messages: history })
     });
     const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || 'عذراً، حدث خطأ.';
+    const reply = data.reply || 'عذراً، حدث خطأ.';
     history.push({ role: 'assistant', content: reply });
     showTyping(false); addMessage(reply, 'bot');
   } catch(e) { showTyping(false); addMessage('عذراً، حدث خطأ في الاتصال.', 'bot'); }
